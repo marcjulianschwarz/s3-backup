@@ -44,7 +44,6 @@ fi
 log "Uploading to Hetzner Object Storage..."
 if aws s3 cp "$TEMP_BACKUP" "$S3_PATH" \
     --endpoint-url="$S3_ENDPOINT" \
-    --no-verify-ssl \
     2>&1 | tee -a /logs/backup.log; then
     log "Upload completed successfully"
 else
