@@ -30,6 +30,12 @@ docker-compose up -d
 docker-compose exec s3-backup /scripts/backup.sh
 ```
 
+### Run cleanup
+
+```bash
+docker-compose exec s3-backup /scripts/cleanup.sh
+```
+
 ## Backup Schedule
 
 The service runs backups **every 30 minutes** automatically. You can modify this in `entrypoint.sh` by changing the cron expression:
@@ -38,6 +44,8 @@ The service runs backups **every 30 minutes** automatically. You can modify this
 # Current: Every 30 minutes
 */30 * * * * /scripts/backup.sh
 ```
+
+And the cleanup runs **every night at 2am**. It will delete all backups for all past days except the last backup of every day. It will keep all backups of the current day.
 
 ## Backup Storage Structure
 
