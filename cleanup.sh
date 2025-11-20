@@ -82,19 +82,19 @@ while IFS= read -r line; do
         # Skip today's backups (keep all)
         if [ "$BACKUP_DATE" == "$TODAY" ]; then
             log "KEEP (today): $FILENAME"
-            ((KEPT_COUNT++))
+            KEPT_COUNT=$((KEPT_COUNT + 1))
             continue
         fi
 
         # Check if this is the last backup for its date
         if [ "${DATE_BACKUPS[$BACKUP_DATE]}" == "$FULL_TIMESTAMP" ]; then
             log "KEEP (last of $BACKUP_DATE): $FILENAME"
-            ((KEPT_COUNT++))
+            KEPT_COUNT=$((KEPT_COUNT + 1))
         else
             log "DELETE (old backup from $BACKUP_DATE): $FILENAME"
             aws s3 rm "${S3_PREFIX}${FILENAME}" --endpoint-url="$S3_ENDPOINT" 2>&1 | tee -a /logs/backup.log
             if [ $? -eq 0 ]; then
-                ((DELETED_COUNT++))
+                DELETED_COUNT=$((DELETED_COUNT + 1))
             else
                 log "ERROR: Failed to delete $FILENAME"
             fi
