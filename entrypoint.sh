@@ -26,6 +26,8 @@ chmod 600 /scripts/.backup.env
 cat > /tmp/crontab <<EOF
 # Run backup every 30 minutes
 */30 * * * * /scripts/backup.sh
+# Run cleanup daily at 2 AM
+0 2 * * * /scripts/cleanup.sh
 EOF
 
 # Install crontab
@@ -33,6 +35,11 @@ crontab /tmp/crontab
 rm /tmp/crontab
 
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Cron configured to run backups every 30 minutes" | tee -a /logs/backup.log
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Cron configured to run cleanup daily at 2 AM" | tee -a /logs/backup.log
+
+# Run initial cleanup to clean up old backups
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Running initial cleanup..." | tee -a /logs/backup.log
+/scripts/cleanup.sh
 
 # Run initial backup immediately
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Running initial backup..." | tee -a /logs/backup.log

@@ -13,6 +13,9 @@ RUN mkdir -p /data /logs /scripts
 COPY backup.sh /scripts/backup.sh
 RUN chmod +x /scripts/backup.sh
 
+COPY cleanup.sh /scripts/cleanup.sh
+RUN chmod +x /scripts/cleanup.sh
+
 COPY entrypoint.sh /scripts/entrypoint.sh
 RUN chmod +x /scripts/entrypoint.sh
 
