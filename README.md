@@ -45,7 +45,25 @@ The service runs backups **every 30 minutes** automatically. You can modify this
 */30 * * * * /scripts/backup.sh
 ```
 
-And the cleanup runs **every night at 2am**. It will delete all backups for all past days except the last backup of every day. It will keep all backups of the current day.
+### Backup Time Window
+
+Backups only run during a configured time window. By default, backups run from **10:00 AM to 2:00 AM** (next day).
+
+To change the time window, edit the following variables in `backup.sh`:
+
+```bash
+BACKUP_START_HOUR=10  # Start backups at 10:00 AM
+BACKUP_END_HOUR=2     # Stop backups at 2:00 AM
+```
+
+The time window supports:
+
+- Normal windows: `START=8, END=18` runs from 8am to 6pm
+- Midnight-crossing windows: `START=10, END=2` runs from 10am to 2am (next day)
+
+### Cleanup Schedule
+
+The cleanup runs **every night at 2am**. It will delete all backups for all past days except the last backup of every day. It will keep all backups of the current day.
 
 ## Backup Storage Structure
 

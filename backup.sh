@@ -10,6 +10,31 @@ log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a /logs/backup.log
 }
 
+# Backup time window configuration (24-hour format)
+# Backups will only run between START_HOUR and END_HOUR
+# If END_HOUR < START_HOUR, the window crosses midnight (e.g., 10 to 2 means 10am to 2am next day)
+BACKUP_START_HOUR=10  # Start backups at 10:00 AM
+BACKUP_END_HOUR=2     # Stop backups at 2:00 AM
+
+# Check if current time is within backup window
+CURRENT_HOUR=$(date '+%-H')
+
+# Function to check if current hour is in backup window
+is_backup_time() {
+    if [ "$BACKUP_START_HOUR" -le "$BACKUP_END_HOUR" ]; then
+        # Normal window (e.g., 8 to 18 = 8am to 6pm)
+        [ "$CURRENT_HOUR" -ge "$BACKUP_START_HOUR" ] && [ "$CURRENT_HOUR" -lt "$BACKUP_END_HOUR" ]
+    else
+        # Window crosses midnight (e.g., 10 to 2 = 10am to 2am)
+        [ "$CURRENT_HOUR" -ge "$BACKUP_START_HOUR" ] || [ "$CURRENT_HOUR" -lt "$BACKUP_END_HOUR" ]
+    fi
+}
+
+if ! is_backup_time; then
+    log "Backup skipped: Current time (${CURRENT_HOUR}:00) is outside backup window (${BACKUP_START_HOUR}:00 - ${BACKUP_END_HOUR}:00)"
+    exit 0
+fi
+
 # Check required environment variables
 if [ -z "$S3_ACCESS_KEY" ] || [ -z "$S3_SECRET_KEY" ] || [ -z "$S3_BUCKET" ] || [ -z "$S3_ENDPOINT" ] || [ -z "$BACKUP_FOLDER_NAME" ]; then
     log "ERROR: Missing required environment variables"
